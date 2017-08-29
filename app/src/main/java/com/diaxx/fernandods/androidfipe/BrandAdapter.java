@@ -13,14 +13,14 @@ import java.util.List;
  * Created by fernandods on 17/07/17.
  */
 
-public class MarcasAdapter extends RecyclerView.Adapter<MarcasAdapter.MyViewHolder> {
+public class BrandAdapter extends RecyclerView.Adapter<BrandAdapter.MyViewHolder> {
 
     private LayoutInflater mInflater;
     private Context mContext;
-    private List<Marca> mListMarcas;
+    private List<Brand> mListMarcas;
     private PositionClickListener mListener;
 
-    public MarcasAdapter(Context context, List<Marca> listMarcas, PositionClickListener listener) {
+    public BrandAdapter(Context context, List<Brand> listMarcas, PositionClickListener listener) {
         mInflater = LayoutInflater.from(context);
         mContext = context;
         mListMarcas = listMarcas;
@@ -49,7 +49,7 @@ public class MarcasAdapter extends RecyclerView.Adapter<MarcasAdapter.MyViewHold
 
     }
 
-    public Marca getItem(int position) {
+    public Brand getItem(int position) {
 
         return mListMarcas.get(position);
     }

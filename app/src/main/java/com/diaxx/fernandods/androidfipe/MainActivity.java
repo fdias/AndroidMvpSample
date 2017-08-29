@@ -7,25 +7,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerViewMarcas;
-    private MarcasAdapter mAdapter;
+    private RecyclerView recyclerView;
     private android.widget.RelativeLayout realtiveLoading;
     private RelativeLayout realtiveErro;
+    private BrandManager manager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,56 +28,72 @@ public class MainActivity extends AppCompatActivity {
 
         realtiveErro = (RelativeLayout) findViewById(R.id.realtiveErro);
         realtiveLoading = (RelativeLayout) findViewById(R.id.realtiveLoading);
-        recyclerViewMarcas = (RecyclerView) findViewById(R.id.recyclerViewMarcas);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerViewBrand);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        recyclerViewMarcas.setLayoutManager(llm);
+        recyclerView.setLayoutManager(llm);
 
-        callService();
+        manager = new BrandManager(getApplicationContext());
+
+        callApi();
 
     }
 
-    private void callService() {
+    private void callApi() {
 
-        realtiveLoading.setVisibility(View.VISIBLE);
-        OkHttpClient client = new OkHttpClient();
+        showLoading();
 
-        Request request = new Request.Builder().url("http://fipeapi.appspot.com/api/1/carros/marcas.json")
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
+        manager.callService(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                realtiveErro.setVisibility(View.VISIBLE);
-                realtiveLoading.setVisibility(View.GONE);
+                showError();
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String responseData = response.body().string();
+            public void onResponse(Call call, final Response response) throws IOException {
+
+                final List<Brand> brandList;
+                brandList = manager.parseResult(response);
 
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Gson gson = new Gson();
-                        Type type = new TypeToken<List<Marca>>() {
-                        }.getType();
-                        List<Marca> marcaList = gson.fromJson(responseData, type);
-                        MarcasAdapter adapte = new MarcasAdapter(getApplicationContext(),
-                                marcaList, new MarcasAdapter.PositionClickListener() {
-                            @Override
-                            public void itemClicked(int position) {
-                                AppPreferences.newInstace().toggleSaveFavorites(mAdapter.getItem(position));
-                            }
-                        });
-                        Realm.newInstace().saveCache(marcaList);
-                        recyclerViewMarcas.setAdapter(adapte);
-                        realtiveLoading.setVisibility(View.GONE);
+
+                        manager.saveCache(brandList);
+                        showResult(brandList);
+
                     }
                 });
             }
         });
 
     }
+
+    private void showResult(final List<Brand> brandList) {
+        BrandAdapter adapte = new BrandAdapter(getApplicationContext(),
+                brandList, new BrandAdapter.PositionClickListener() {
+            @Override
+            public void itemClicked(int position) {
+                manager.toggleSaveFavorites(brandList.get(position));
+            }
+        });
+
+        recyclerView.setAdapter(adapte);
+        hideLoading();
+    }
+
+    private void hideLoading() {
+        realtiveLoading.setVisibility(View.GONE);
+    }
+
+    private void showLoading() {
+        realtiveLoading.setVisibility(View.VISIBLE);
+    }
+
+    private void showError() {
+        realtiveErro.setVisibility(View.VISIBLE);
+        hideLoading();
+    }
+
 
 }

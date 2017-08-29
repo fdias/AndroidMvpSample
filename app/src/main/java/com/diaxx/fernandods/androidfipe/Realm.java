@@ -1,5 +1,7 @@
 package com.diaxx.fernandods.androidfipe;
 
+import android.content.Context;
+
 import java.util.List;
 
 /**
@@ -8,18 +10,12 @@ import java.util.List;
 
 public class Realm {
 
-    private static Realm instace;
 
-    public static Realm newInstace() {
+    public Realm(Context context) {
 
-        if (instace == null) {
-            instace = new Realm();
-        }
-
-        return instace;
     }
 
-    public void saveCache(List<Marca> list) {
+    public void saveCache(List<Brand> list) {
 
     }
 

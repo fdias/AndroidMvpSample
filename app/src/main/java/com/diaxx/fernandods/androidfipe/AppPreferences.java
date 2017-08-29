@@ -6,18 +6,8 @@ package com.diaxx.fernandods.androidfipe;
 
 public class AppPreferences {
 
-    private static AppPreferences instace;
 
-    public static AppPreferences newInstace() {
-
-        if (instace == null) {
-            instace = new AppPreferences();
-        }
-
-        return instace;
-    }
-
-    public void toggleSaveFavorites(Marca marca) {
+    public void toggleSaveFavorites(Brand marca) {
 
     }
 

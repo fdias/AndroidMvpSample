@@ -4,7 +4,7 @@ package com.diaxx.fernandods.androidfipe;
  * Created by fernandods on 24/07/17.
  */
 
-class Marca {
+class Brand {
     /**
      * name : AUDI
      * fipe_name : Audi
